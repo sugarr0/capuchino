@@ -35,7 +35,7 @@ class MyWidget(QMainWindow):
         rows = list(set([i.row() for i in self.tableWidget.selectedItems()]))
         if len(rows) != 1:
             QMessageBox.question(self, '', "Выберите 1 элемент",
-                                        QMessageBox.Ok)
+                                 QMessageBox.Ok)
             return
         inf = self.tableWidget.item(rows[0], 0).text()
         form = AddEdit(self, inf)
@@ -43,6 +43,22 @@ class MyWidget(QMainWindow):
 
     def upd(self, res):
         print(res)
+        if not res[0]:
+            cursor = self.cursor.cursor()
+            cursor.execute(
+                "INSERT INTO coffee(sort, roasting, groundbeans," +
+                " flavor_description, price, volume) VALUES(?, ?, ?, ?, ?, ?)",
+                (res[1], res[2], res[3], res[4], int(res[5]), int(res[6])))
+            self.cursor.commit()
+            self.see()
+        else:
+            cursor = self.cursor.cursor()
+            cursor.execute(
+                "UPDATE coffee SET sort = ?, roasting = ?, groundbeans = ?, flavor_description = ?, " +
+                "price = ?, volume = ? WHERE id = ?",
+                (res[1], res[2], res[3], res[4], int(res[5]), int(res[6]), res[0]))
+            self.cursor.commit()
+            self.see()
 
 
 class AddEdit(QDialog):
